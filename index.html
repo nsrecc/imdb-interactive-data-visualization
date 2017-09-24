@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Noel Recchia - IMDb Interactive Data Visualization</title>
+
+    <!-- include css libraries -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <style type="text/css">
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            margin: auto;
+            width: 70%;
+        }
+    </style>
+
+    <!-- Include js libraries for d3, crossfilter, and dc -->
+    <script type="text/javascript" src="js/d3.js"></script>
+    <script type="text/javascript" src="js/crossfilter.js"></script>
+    <script type="text/javascript" src="js/dc.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="row" style="padding-bottom:15px;">
+        <div class="dc-data-count">
+            <h1>Exploring Popularity, Gross, Score, and Ratings in Movies: An IDMb Interactive Data Visualization</h1>
+            <h2>By <a href="http://www.noelrecchia.com/">Noel Recchia</a></h2>
+
+            <p>Movies always leave outstanding impressions on me. From big blockbusters to indie films, each movie 
+            brings a unique and enjoyable experience. I am interested in movie related datasets because there are a lot 
+            of relationships and patterns between movies and their corresponding information and data. There 
+            are countless questions that can be hinted at from such datasets. Some of them question the popularity of 
+            movies against certain review scores. I wonder if certain MPAA ratings like G, R, or NC-17 can affect the 
+            score of films and or its gross in the box ofice. How have movies and rating groups done well in terms of 
+            gross and scores over the years?
+            <br><br>
+            <b>Note:</b> The selection from this dataset consists of movies with the country entry of 'USA', non-null 
+            MPAA content ratings, and year entries from 1916 to 2016. The original IMDb Dataset selection, which 
+            consists of around 5000 records can be found 
+            <a href="https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset">here</a>. This selection and dataset 
+            does not represent all movies and is just a small sample set. All findings will not hold the same if the 
+            sample size included all movies produced.</p>
+
+            <h3>
+                <span>
+                    <span class="filter-count"></span> selected out of 
+                    <span class="total-count"></span> movies -
+                    <a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+                </span>
+            </h3>
+        </div>
+    </div>
+
+    <!-- set up charts on page by row -->
+    <div class="row" style="padding-bottom:15px;">
+        <div id="histogram">
+            <h3>Number of Movies by Year</h3>
+        </div>
+            
+        <p>Above is the distribution of movies in my dataset grouped by year of release. There is a minimal amount of 
+        movies before the 1970s and 1980s, where blockbusters started dominating the cinema landscape. Since the 
+        original dataset was collected in late 2016, the amount of films from that year in retrospect to previous years 
+        is significantly less.</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="histogram2">
+            <h3>Number of Movies by IMDb Score</h3>
+        </div>
+        
+        <p>Similar to the previous visualization, this is the distribution of movies grouped by its IMDb score as voted 
+        by IMDb users. Unlike the year distribution, the IMDb score distribution fits to a nice curve maxing out at a 
+        6.7 rating. What is important is that as we get closer to the ends of the distribution, the number of films for 
+        each rating decreases. There is one film each at the two highest ratings: The Shawshank Redemption at 9.3 and 
+        The Godfather at 9.2. (Side Note: The Shawshank Redemption is currently at 9.2 and tied with The Godfather as 
+        of 2017.)</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="piechart">
+            <h3>Number of Movies by MPAA Rating</h3>
+        </div>
+
+        <p>This pie chart provides the distribution of movies grouped by MPAA Rating. The majority of films have a 
+        content rating of either PG, PG-13, or R. This is can explained by the notion that movies released in theaters 
+        today are mostly either G, PG, PG-13, or R rated, with the majority of them being the last two. Movies that are 
+        rated NC-17 or Unrated usually do not get released in theaters and are usually shown at festivals or are 
+        released straight to DVD or streaming services.</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="scatterplot">
+            <h3>Movie Budget vs. Domestic Box Office Gross</h3>
+        </div>
+        
+        <p>Movie budget to box office gross in the United States is compared in the above scatterplot. There are many 
+        films that are made with a budget less than $100,000,000, and a good majority of them make their money back in 
+        gross with a good amount making double or triple the budget in gross. While there are some outliers for massive 
+        blockbusters, some errors in the data can be seen where the gross or budget of a film is $0. As noted from the 
+        dataset scraper author, the dataset could not retrieve all values in some of the fields for movies, so they are 
+        filled with the value $0.</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="heatmap">
+            <h3>Movie Domestic Box Office Gross by IMDb Score and MPAA Rating</h3>
+        </div>
+
+        <div id="heatmapLegend"></div>
+        
+        <p>The heatmap shows the summed gross of movies grouped by IMDb score and MPAA rating. The summed gross value 
+        range is represented by the color yellow to blue, where yellow is the lowest and blue is the highest. Since it 
+        is the summed gross, the highest values mostly occur in groupings that contain the most amount of movies. The 
+        ratings PG, PG-13, and R contain the highest summed gross for films and this can be attributed to the earlier 
+        explanation where these films are the most popular films released in theaters, which generates income thus 
+        allowing opportunities to become blockbuster hits.</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="serieschart">
+            <h3>Average IMDb Score for each MPAA Rating by Year</h3>
+        </div>
+        
+        <p>In the series chart above, each line represents a specific MPAA rating's average IMDb score across each 
+        year. One thing to notice is that from this visualization, some of the ratings in the past were used and 
+        discontinued, such as Approved and Passed. It appears that the overall trend of average IMDb scores decrease 
+        over the years due to a number of reasons, but is not truly represented for all data. I believe that for this 
+        dataset, there are outliers for earlier dated films, in which some of them may have been well received and or 
+        are popular films. Another reason could be due to the fact that IMDb is a website that existed since the start 
+        of the internet. The demographic of users on IMDb are most likely just as old as the internet so many of these 
+        users may rate only films made after 1990 or similar. This in turn causes a slight decrease in average 
+        rating.</p>
+    </div>
+
+    <div class="row" style="padding-bottom:15px;">
+        <div id="compositechart">
+            <h3>Average Gross vs. Average Number of IMDb Votes by IMDb Rating</h3>
+        </div>
+        
+        <p>Above is a line chart with two interesting lines for average domestic box office gross and for average 
+        number of IMDb votes for movies grouped by IMDb rating. One thing I wanted to look at is the popularity of a 
+        movie defined by the amount of people who paid to see the movie as shown by the gross line, and the amount of 
+        people who have rated it on IMDb which should be sometime after they have seen a movie. There seems to be a 
+        trend of the average gross increasing as each IMDb score goes higher. This can be explained with people wanting 
+        to spend their money on watching good movies. The exceptions are the drastic outliers at both sides of the 
+        chart. The lowest score on the graph is a 1.6 for the infamous hit movie Justin Bieber: Never Say Never, while 
+        at the other side is the critically acclaimed but non-blockbuster The Shawshank Redemption. These outliers are 
+        caused solely to the fact that so few movies are near these ratings. A reason as to why there is a sudden 
+        increase in IMDb votes beyond IMDb scores of 8.0 is due to the fact that these movies start to hit the IMDb Top 
+        250 Movie list.
+        <br><br>
+        From the visualizations overall, I have found that even though this dataset selection is somewhat flawed with 
+        some errors and even though it does not represent all movies ever made, this dataset selection does provide 
+        some nice information about movies released in theaters, their introduction to popularity and revenue numbers, 
+        and its relation to scores and ratings by the MPAA and by users on IMDb.</p>
+    </div>
+
+    <script type="text/javascript">
+
+    // associate charts with above DOMs
+    var myHistogram = dc.barChart("#histogram");
+    var myHistogram2 = dc.barChart("#histogram2");
+    var myPiechart = dc.pieChart("#piechart");
+    var myScatterplot = dc.scatterPlot("#scatterplot");
+    var myHeatmap = dc.heatMap("#heatmap");
+    var myHeatmapLegend = dc.heatMap("#heatmapLegend");
+    var mySerieschart = dc.seriesChart("#serieschart");
+    var myCompchart = dc.compositeChart("#compositechart");
+
+    // import the cleaned csv
+    d3.csv("movies-usa.csv", function(error, data) {
+        callbackError = error;
+        callbackData = data;
+
+        data.forEach(function(d) {
+            d.title_year =+d["title_year"];
+            d.gross =+d["gross"];
+            d.budget =+d["budget"];
+            d.content_rating = d["content_rating"];
+            d.imdb_score =+d["imdb_score"];
+            d.num_voted_users =+d["num_voted_users"];
+        });
+
+        // crossfilter
+        var ndx = crossfilter(data),
+            // x dimension for histogram
+            yearDim = ndx.dimension(function(d) { return +d.title_year; }),
+            movieCountHisto = yearDim.group().reduceCount(),
+
+            mpaaDim = ndx.dimension(function(d) { return d.content_rating; }),
+            mpaaCountPie = mpaaDim.group().reduceCount(),
+
+            imdbDim = ndx.dimension(function(d) { return +d.imdb_score; }),
+            imdbCountHisto = imdbDim.group().reduceCount(),
+
+            // scatterplot dimensions
+            scatterDim = ndx.dimension(function(d) { return [+d.budget, +d.gross]; }),
+
+
+            // heatmap
+            imdbMpaaDim = ndx.dimension(function(d) { return [+d.imdb_score, d.content_rating]; }),
+            grossHeat = imdbMpaaDim.group().reduceSum(function(d) { return +d.gross; });
+
+            // series chart
+            mpaaYearDim = ndx.dimension(function(d) { return [d.content_rating, +d.title_year]; }),
+            imdbGroupSeries = mpaaYearDim.group().reduce(
+                /* callback for when data is added to the current filter results */
+                function (p, v) {
+                    ++p.count;
+                    p.sum+= +v.imdb_score;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* callback for when data is removed from the current filter results */
+                function (p, v) {
+                    --p.count;
+                    p.sum-= +v.imdb_score;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* initialize p */
+                function () {
+                    return {
+                        count: 0,
+                        sum: 0,
+                        average: 0
+                    };
+                }
+            ),
+
+            // composite chart
+            imdbDim2 = ndx.dimension(function(d) { return +d.imdb_score; }),
+            grossCompLine = imdbDim2.group().reduce(
+                /* callback for when data is added to the current filter results */
+                function (p, v) {
+                    ++p.count;
+                    p.sum+= +v.gross;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* callback for when data is removed from the current filter results */
+                function (p, v) {
+                    --p.count;
+                    p.sum-= +v.gross;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* initialize p */
+                function () {
+                    return {
+                        count: 0,
+                        sum: 0,
+                        average: 0
+                    };
+                }
+            ),
+            numVotersCompLine = imdbDim2.group().reduce(
+                /* callback for when data is added to the current filter results */
+                function (p, v) {
+                    ++p.count;
+                    p.sum+= +v.num_voted_users;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* callback for when data is removed from the current filter results */
+                function (p, v) {
+                    --p.count;
+                    p.sum-= +v.num_voted_users;
+                    p.average = (p.sum / p.count);
+                    return p;
+                },
+                /* initialize p */
+                function () {
+                    return {
+                        count: 0,
+                        sum: 0,
+                        average: 0
+                    };
+                }
+            );
+
+        var allData = ndx.groupAll();
+
+        // count all the facts
+        dc.dataCount(".dc-data-count")
+            .dimension(ndx)
+            .group(allData);
+
+
+        // histogram attributes
+        myHistogram
+            .width(1400)
+            .height(400)
+            .margins({top: 0, right: 50, bottom: 40, left: 30})
+            .x(d3.scale.linear().domain([1916, 2017]))
+            .xAxisLabel("Year")
+            .yAxisLabel("Number of Movies")
+            .brushOn(false)
+            .elasticY(true) // scales y axis values from interactions
+            .dimension(yearDim)
+            .group(movieCountHisto)
+            .centerBar(false)
+            .controlsUseVisibility(true)
+            .ordinalColors(["#128bb5"])
+            .renderHorizontalGridLines(true)
+            .title(function(d) { // probing
+                return 'Year: ' + d.key + '\n'
+                + 'Number of Movies: ' + d.value;
+            })
+            .xAxis().tickFormat(d3.format("d"));
+
+
+        myHistogram2
+            .width(1400)
+            .height(400)
+            .margins({top: 0, right: 50, bottom: 40, left: 40})
+            .x(d3.scale.ordinal())
+            .xUnits(dc.units.ordinal)
+            .xAxisLabel("IMDb Score")
+            .yAxisLabel("Number of Movies")
+            .brushOn(false) // disable select/brushing
+            .elasticY(true) // scales y axis values from interactions
+            .dimension(imdbDim)
+            .group(imdbCountHisto)
+            .centerBar(false)
+            .controlsUseVisibility(true)
+            .ordinalColors(["#deb522"])
+            .renderHorizontalGridLines(true)
+            .title(function(d) { // probing
+                return 'IMDb Score: ' + d.key + '\n'
+                + 'Number of Movies: ' + d.value;
+            })
+            .xAxis().tickFormat(d3.format(".1f"));;
+
+
+        myPiechart
+            .width(800)
+            .height(400)
+            .innerRadius(100)
+            .dimension(mpaaDim)
+            .group(mpaaCountPie)
+            .colors(d3.scale.category20())
+            .legend(dc.legend().itemHeight(20));
+
+
+        // Values next to items in legend
+        // from http://stackoverflow.com/questions/38430632/how-can-we-add-legends-value-beside-of-legend-with-proper-alignment-and-differe
+        myPiechart.on('pretransition', function(chart) {
+            myPiechart.selectAll('.dc-legend-item text')
+            .text('')
+            .append('tspan')
+            .text(function(d) { return d.name; })
+            .append('tspan')
+            .attr('x', 100)
+            .attr('text-anchor', 'end')
+            .text(function(d) { return d.data; });
+        });
+
+
+        // scatterplot attributes
+        myScatterplot // brushOn is true by default
+            .width(1400)
+            .height(700)
+            .margins({top: 10, right: 50, bottom: 40, left: 80})
+            .y(d3.scale.linear().domain([0, 800000000]))
+            .x(d3.scale.linear().domain([0, 310000000]))
+            .xAxisLabel("Budget (USD)")
+            .yAxisLabel("Domestic Box Office Gross (USD)")
+            .clipPadding(10)
+            .dimension(scatterDim)
+            .group(scatterDim.group())
+            .ordinalColors(["#deb522"]) // change color to red
+            .excludedOpacity(0.7)
+            .excludedColor("#aaa") // deselected values change to gray
+
+
+        // **heatmap legend data, resource used:
+        // http://stackoverflow.com/questions/31441536/is-there-a-way-to-make-a-key-or-legend-for-a-heat-map-with-dc-js
+        
+        // set min and max heat values, find range value
+        var heatMaxValue = 4600000000;
+        var heatMinValue = 0;
+        var heatRangeValue = heatMaxValue - heatMinValue;
+
+        // get each value for probing the legend
+        var heatValues = [];
+        for (var i = 0; i < 45; i++) {
+            heatValues.push( { 
+                val: heatMinValue + i / 44 * heatRangeValue,
+                index: i
+            });
+        }
+
+        var heat = crossfilter(heatValues);
+
+        var heatmapLegendDim = heat.dimension(function(d) {
+            return [d.index, 1];
+        });
+
+        var heatmapLegendGroup = heatmapLegendDim.group().reduceSum(function(d) {
+            return d.val;
+        });
+
+        // create a color mapping for heatmap of min and max value of domains to range between set of colors
+        var heatmapColorMap = function(d) {
+            return d3.scale.linear().domain([heatMinValue, heatMaxValue]).range(["#deb522", "#128bb5"])(d);
+        };
+
+        heatmapColorMap.domain = function() {
+            return [heatMinValue, heatMaxValue];
+        };
+        // **end heatmap legend data
+
+        // heatmap attributes
+        myHeatmap
+            .width(1400)
+            .height(400)
+            .margins({top: 0, right: 50, bottom: 20, left: 70})
+            .dimension(imdbMpaaDim)
+            .group(grossHeat)
+            .xBorderRadius(0) // 0 gets full rectangles
+            .yBorderRadius(0)
+            .keyAccessor(function(d) { return +d.key[0]; })
+            .valueAccessor(function(d) { return d.key[1]; })
+            .colorAccessor(function(d) { return +d.value; })
+            .title(function(d) { // probing
+                return 'IMDb Score: ' + d.key[0] + '\n'
+                + 'MPAA Rating: ' + d.key[1] + '\n'
+                + 'Domestic Gross: ' + d.value; })
+            .colors(heatmapColorMap)
+            .calculateColorDomain();
+
+        // heatmap legend attributes
+        myHeatmapLegend
+            .width(1400)
+            .height(40)
+            .margins({top: 0, right: 50, bottom: 10, left: 70})
+            .dimension(heatmapLegendDim)
+            .group(heatmapLegendGroup)
+            .xBorderRadius(0) // 0 gets full rectangles
+            .yBorderRadius(0)
+            .boxOnClick(function(d) { return; }) // Disable clicking
+            .rowsLabel(function(d) { return "Color Legend"; })
+            .colsLabel(function(d){ return null; })
+            .keyAccessor(function(d) { return d.key[0]; })
+            .valueAccessor(function(d) { return d.key[1]; })
+            .colorAccessor(function(d) { return d.value; })
+            .title(function(d) { // probing
+                return 'Domestic Gross: ' + Math.round(d.value); })
+            .colors(heatmapColorMap)
+            .calculateColorDomain();
+
+
+        // series chart of content ratings lines and imdb score (y) over years (x) 
+        mySerieschart
+            .width(1400)
+            .height(400)
+            .margins({top: 0, right: 50, bottom: 40, left: 30})
+            .x(d3.scale.linear().domain([1916, 2016]))
+            .brushOn(false)
+            .xAxisLabel("Year")
+            .yAxisLabel("Average IMDb Score")
+            .clipPadding(10)
+            .elasticY(true)
+            .dimension(mpaaYearDim)
+            .group(imdbGroupSeries)
+            .renderHorizontalGridLines(true)
+            .renderVerticalGridLines(true)
+            .colors(d3.scale.category20())
+            .seriesAccessor(function(d) {return "MPAA Rating: " + d.key[0]; })
+            .keyAccessor(function(d) { return +d.key[1]; })
+            .valueAccessor(function(d) { return +d.value.average; })
+            .legend(dc.legend().x(50).y(150).itemHeight(14).gap(5).horizontal(1).legendWidth(300).itemWidth(150))
+            .title(function(d) { // probing
+                return 'MPAA Rating: ' + d.key[0] + '\n'
+                + 'Year: ' + d.key[1] + '\n'
+                + 'Average IMDb Score: ' + d.value.average; })
+            .xAxis().tickFormat(d3.format("d"));
+
+
+        // composite couble axis line chart of avg. gross and avg. number of imdb votes over imdb rating
+        myCompchart
+            .width(1400)
+            .height(400)
+            // .transitionDuration(1000)
+            .margins({top: 0, right: 80, bottom: 40, left: 80})
+            .dimension(imdbDim2)
+            .shareTitle(false)
+            .x(d3.scale.linear().domain([1.6, 9.3]))
+            .elasticY(true)
+            .renderHorizontalGridLines(true)
+            .renderVerticalGridLines(true)
+            .legend(dc.legend().x(100).y(10).itemHeight(14).gap(5))
+            .brushOn(false)
+            .compose([
+                dc.lineChart(myCompchart)
+                    .group(grossCompLine, "Average Gross")
+                    .valueAccessor(function (d) { return d.value.average; })
+                    .title(function(d) { // probing
+                        return 'IMDb Score: ' + d.key + '\n'
+                        + 'Average Gross: ' + d.value.average; })
+                    .ordinalColors(["#128bb5"]),
+                dc.lineChart(myCompchart)
+                    .group(numVotersCompLine, "Average Number of IDMb Votes")
+                    .valueAccessor(function (d) { return d.value.average; })
+                    .title(function(d) { // probing
+                        return 'IMDb Score: ' + d.key + '\n'
+                        + 'Average Number of IMDb Votes: ' + d.value.average; })
+                    .ordinalColors(["#deb522"])
+                    .useRightYAxis(true)
+            ])
+            .xAxisLabel("IMDb Score")
+            .yAxisLabel("Average Gross")
+            .rightYAxisLabel("Average Number of IMDb Votes");
+
+
+        // render everything
+        dc.renderAll();
+    });
+
+    </script>
+</div>
+</body>
+
+</html>
