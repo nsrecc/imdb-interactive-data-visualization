@@ -32,7 +32,7 @@
 <div class="container">
     <div class="row" style="padding-bottom:15px;">
         <div class="dc-data-count">
-            <h1>Exploring Popularity, Gross, Score, and Ratings in Movies: An IDMb Interactive Data Visualization</h1>
+            <h1>Exploring Popularity, Gross, Score, and Ratings in Movies: An IMDb Interactive Data Visualization</h1>
             <h2>By <a href="http://www.noelrecchia.com/">Noel Recchia</a></h2>
 
             <p>Movies always leave outstanding impressions on me. From big blockbusters to indie films, each movie 
@@ -510,7 +510,7 @@
                         + 'Average Gross: ' + d.value.average; })
                     .ordinalColors(["#128bb5"]),
                 dc.lineChart(myCompchart)
-                    .group(numVotersCompLine, "Average Number of IDMb Votes")
+                    .group(numVotersCompLine, "Average Number of IMDb Votes")
                     .valueAccessor(function (d) { return d.value.average; })
                     .title(function(d) { // probing
                         return 'IMDb Score: ' + d.key + '\n'
