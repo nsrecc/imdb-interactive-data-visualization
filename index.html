@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Noel Recchia - IMDb Interactive Data Visualization</title>
-    <link rel="icon" type="image/png" href="/img/n.png">
+    <link rel="icon" type="image/png" href="img/n.png">
 
     <!-- include css libraries -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -18,8 +18,13 @@
             font-family: 'Roboto', sans-serif;
         }
         .container {
-            margin: auto;
-            width: 70%;
+            margin: 0px auto;
+            padding: 20px;
+            width: 1400px;
+        }
+        .row {
+            margin: 0px auto;
+            padding-bottom: 40px;
         }
     </style>
 
@@ -31,7 +36,7 @@
 
 <body>
 <div class="container">
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div class="dc-data-count">
             <h1>Exploring Popularity, Gross, Score, and Ratings in Movies: An IMDb Interactive Data Visualization</h1>
             <h2>By <a href="https://www.noelrecchia.com">Noel Recchia</a></h2>
@@ -48,10 +53,10 @@
             MPAA content ratings, and year entries from 1916 to 2016. The original IMDb Dataset selection, which 
             consists of around 5000 records can be found 
             <a href="https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset">here</a>. The massaged dataset with
-            the previous conditions applied can be seen <a href="/movies-usa.csv">here</a> and the original dataset
-            can be seen <a href="/movie_metadata_orig.csv">here</a>.
-            This selection and dataset does not represent all movies and is just a small sample set. All findings
-            will not hold the same if the sample size included all movies produced.</p>
+            the previous conditions applied can be seen <a href="movies-usa.csv">here</a>, and the original dataset
+            can be seen <a href="movie_metadata_orig.csv">here</a>. This selection and dataset does not represent
+            all movies and is just a small sample set. All findings will not hold the same if the sample size
+            included all movies produced.</p>
 
             <h3>
                 <span>
@@ -64,7 +69,7 @@
     </div>
 
     <!-- set up charts on page by row -->
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="histogram">
             <h3>Number of Movies by Year</h3>
         </div>
@@ -75,7 +80,7 @@
         is significantly less.</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="histogram2">
             <h3>Number of Movies by IMDb Score</h3>
         </div>
@@ -88,7 +93,7 @@
         of 2017.)</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="piechart">
             <h3>Number of Movies by MPAA Rating</h3>
         </div>
@@ -100,7 +105,7 @@
         released straight to DVD or streaming services.</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="scatterplot">
             <h3>Movie Budget vs. Domestic Box Office Gross</h3>
         </div>
@@ -113,7 +118,7 @@
         filled with the value $0.</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="heatmap">
             <h3>Movie Domestic Box Office Gross by IMDb Score and MPAA Rating</h3>
         </div>
@@ -128,7 +133,7 @@
         allowing opportunities to become blockbuster hits.</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="serieschart">
             <h3>Average IMDb Score for each MPAA Rating by Year</h3>
         </div>
@@ -144,7 +149,7 @@
         rating.</p>
     </div>
 
-    <div class="row" style="padding-bottom:15px;">
+    <div class="row">
         <div id="compositechart">
             <h3>Average Gross vs. Average Number of IMDb Votes by IMDb Rating</h3>
         </div>
